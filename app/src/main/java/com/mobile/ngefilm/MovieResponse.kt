@@ -10,6 +10,6 @@ data class Movie(
     val overview: String,
     val poster_path: String?,
     val vote_average: Float,
-    val video_url: String? = null, // Placeholder untuk trailer
+    var video_url: String? = null, // Placeholder untuk trailer
     var isFavorite: Boolean = false
 )

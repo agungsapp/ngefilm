@@ -1,6 +1,7 @@
 package com.mobile.ngefilm
 
 import android.os.Bundle
+import android.webkit.WebSettings
 import android.webkit.WebView
 import android.widget.ImageView
 import android.widget.TextView
@@ -20,12 +21,31 @@ class MovieDetailActivity : AppCompatActivity() {
 
         findViewById<TextView>(R.id.detail_title).text = title
         findViewById<TextView>(R.id.detail_overview).text = overview
-        findViewById<TextView>(R.id.detail_rating).text = "Rating: $rating/10" // Tambahkan TextView untuk rating
+        findViewById<TextView>(R.id.detail_rating).text = "Rating: $rating/10"
         Glide.with(this)
             .load("https://image.tmdb.org/t/p/w500$posterPath")
             .into(findViewById<ImageView>(R.id.detail_poster))
 
         val webView = findViewById<WebView>(R.id.web_view)
-        videoUrl?.let { webView.loadUrl(it) }
+        val webSettings: WebSettings = webView.settings
+        webSettings.javaScriptEnabled = true // Aktifkan JavaScript untuk YouTube
+        videoUrl?.let {
+            val html = """
+                        <html>
+                            <body style="margin:0;padding:0;">
+                                <iframe width="100%" height="100%" 
+                                    src="$it" 
+                                    frameborder="0" 
+                                    allowfullscreen>
+                                </iframe>
+                            </body>
+                        </html>
+                    """.trimIndent()
+
+            webView.loadData(html, "text/html", "utf-8")
+
+        } ?: run {
+            webView.loadData("<h1>No trailer available</h1>", "text/html", "utf-8")
+        }
     }
 }

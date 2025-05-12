@@ -14,6 +14,7 @@ import com.mobile.ngefilm.MovieAdapter
 import com.mobile.ngefilm.MovieDetailActivity
 import com.mobile.ngefilm.MovieResponse
 import com.mobile.ngefilm.R
+import com.mobile.ngefilm.VideoResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -54,7 +55,7 @@ class MovieListFragment : Fragment() {
     }
 
     private fun fetchMovies() {
-        val apiKey = "f1720574546b51c280b07d1d9392284c" // Ganti dengan API key kamu
+        val apiKey = "f1720574546b51c280b07d1d9392284c"
         val call = ApiClient.apiService.getPopularMovies(apiKey)
         call.enqueue(object : Callback<MovieResponse> {
             override fun onResponse(call: Call<MovieResponse>, response: Response<MovieResponse>) {
@@ -62,11 +63,30 @@ class MovieListFragment : Fragment() {
                     response.body()?.results?.let { movieList ->
                         movies.clear()
                         movies.addAll(movieList)
+                        // Fetch trailers for each movie
+                        movieList.forEach { movie ->
+                            val videoCall = ApiClient.apiService.getMovieVideos(movie.id, apiKey)
+                            videoCall.enqueue(object : Callback<VideoResponse> {
+                                override fun onResponse(call: Call<VideoResponse>, response: Response<VideoResponse>) {
+                                    if (response.isSuccessful) {
+                                        response.body()?.results?.firstOrNull()?.let { video ->
+                                            movie.video_url = "https://www.youtube.com/embed/${video.key}"
+
+                                        }
+                                    }
+                                    recyclerView.adapter?.notifyDataSetChanged()
+                                }
+
+                                override fun onFailure(call: Call<VideoResponse>, t: Throwable) {
+                                    t.printStackTrace()
+                                }
+                            })
+                        }
                         recyclerView.adapter?.notifyDataSetChanged()
-                        println("Movies fetched: ${movieList.size}") // Debugging
+                        println("Movies fetched: ${movieList.size}")
                     }
                 } else {
-                    println("Response failed: ${response.code()}") // Debugging
+                    println("Response failed: ${response.code()}")
                 }
             }
 
