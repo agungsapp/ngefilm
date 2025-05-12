@@ -14,7 +14,7 @@ class ProfileFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_profile, container, false)
-        view.findViewById<TextView>(R.id.profile_text).text = "User Profile\nName: John Doe\nEmail: john.doe@example.com"
+        view.findViewById<TextView>(R.id.profile_text).text = "User Profile\nName: Budi Setiawan\nEmail: budi.setiawan@gmail.com"
         return view
     }
 }

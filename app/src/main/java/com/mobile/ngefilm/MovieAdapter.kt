@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AlphaAnimation
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -19,7 +20,7 @@ class MovieAdapter(
     class MovieViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val title: TextView = itemView.findViewById(R.id.movie_title)
         val poster: ImageView = itemView.findViewById(R.id.movie_poster)
-        val favoriteButton: Button = itemView.findViewById(R.id.favorite_button)
+        val favoriteButton: ImageButton = itemView.findViewById(R.id.favorite_button)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieViewHolder {
@@ -33,7 +34,13 @@ class MovieAdapter(
         Glide.with(holder.itemView.context)
             .load("https://image.tmdb.org/t/p/w500${movie.poster_path}")
             .into(holder.poster)
-        holder.favoriteButton.text = if (movie.isFavorite) "Remove Favorite" else "Add Favorite"
+
+        // Set the correct icon for favorite button based on the movie's favorite status
+        val favoriteIcon = if (movie.isFavorite) R.drawable.favorite else R.drawable.ic_favorite_border
+        holder.favoriteButton.setImageResource(favoriteIcon)
+
+        holder.favoriteButton.setImageResource(favoriteIcon)
+
         holder.itemView.setOnClickListener { onItemClick(movie) }
         holder.favoriteButton.setOnClickListener {
             val animation = AlphaAnimation(0.3f, 1.0f)
